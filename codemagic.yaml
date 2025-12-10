@@ -1,0 +1,31 @@
+workflows:
+  raonson_android_ios:
+    name: Raonson Android & iOS build
+    max_build_duration: 120
+    environment:
+      flutter: stable
+      xcode: latest
+      vars:
+        # Set these in Codemagic UI as secure env vars (do NOT commit secrets)
+        FLUTTER_BUILD_MODE: "release"
+        FIREBASE_JSON: $FIREBASE_JSON   # optional: base64 or actual file, set in UI
+    scripts:
+      - name: Install dependencies
+        script: |
+          flutter pub get
+      - name: Run code generation (if any)
+        script: |
+          # e.g. flutter pub run build_runner build --delete-conflicting-outputs
+          echo "No codegen by default"
+    artifacts:
+      - build/app/outputs/flutter-apk/app-release.apk
+      - build/ios/ipa/*.ipa
+    android:
+      build:
+        flavor: ""
+        build_type: "release"
+        target: "lib/main.dart"
+    ios:
+      build:
+        export_method: "ad-hoc" # or app-store for TestFlight
+        build_for_device: true
