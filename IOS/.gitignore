@@ -1,0 +1,5 @@
+Pods/
+Runner/GeneratedPluginRegistrant.*
+Generated.xcconfig
+Flutter.podspec
+ServiceDefinitions.json
