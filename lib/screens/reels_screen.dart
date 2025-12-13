@@ -18,7 +18,7 @@ class ReelsScreen extends StatelessWidget {
             color: Colors.black,
             child: Center(child: Text('Reel placeholder', style: TextStyle(color: Colors.white))),
           ),
-          VideoPlayerWidget(url: ''),
+          VideoPlayerController.network(url: videoUrl)
         ],
       ),
     );
