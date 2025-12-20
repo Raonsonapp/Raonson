@@ -1,4 +1,4 @@
-name: Raonson Build Fix
+name: Raonson Master Fix
 
 on:
   push:
@@ -25,18 +25,36 @@ jobs:
         with:
           channel: 'stable'
 
-      - name: Recreate Project & Build
+      - name: Force Clean & Recreate
         run: |
-          # 1. Тоза кардани файлҳои кӯҳна
-          flutter clean
+          # 1. Тоза кардани ҳама файлҳои шубҳанок
+          rm -rf android ios web macos linux windows
+          rm -f pubspec.lock
           
-          # 2. Нест кардани папкаи android агар хато бошад
-          rm -rf android
+          # 2. Сохтани файли pubspec.yaml-и тоза (агар дар он хато бошад)
+          cat <<EOF > pubspec.yaml
+          name: raonson
+          description: "Raonson mobile app"
+          publish_to: 'none'
+          version: 1.0.0+1
+          environment:
+            sdk: '>=3.2.0 <4.0.0'
+          dependencies:
+            flutter:
+              sdk: flutter
+            cupertino_icons: ^1.0.2
+          dev_dependencies:
+            flutter_test:
+              sdk: flutter
+            flutter_lints: ^3.0.0
+          flutter:
+            uses-material-design: true
+          EOF
+
+          # 3. Сохтани лоиҳаи нав дар болои коди мавҷуда
+          flutter create . --platforms android --package-name com.raonson.app --force
           
-          # 3. Аз нав сохтани лоиҳа (ин ноутбукро иваз мекунад)
-          flutter create . --platforms android --package-name com.raonson.app
-          
-          # 4. Барқарор кардани вобастагиҳо
+          # 4. Насб кардани пакетҳо
           flutter pub get
           
           # 5. Сохтани APK
