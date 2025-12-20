@@ -1,6 +1,6 @@
 name: Flutter APK
 
-on: [push]
+on: 
 
 jobs:
   build:
