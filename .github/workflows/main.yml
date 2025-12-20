@@ -1,15 +1,21 @@
-name: Raonson Build
+name: Raonson Build Fix
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Set up Java
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
@@ -19,22 +25,19 @@ jobs:
         with:
           channel: 'stable'
 
-      - name: Repair and Build
+      - name: Recreate Project & Build
         run: |
-          # 1. Тоза кардани кэш ва файлҳои кӯҳна
+          # 1. Тоза кардани файлҳои кӯҳна
           flutter clean
           
-          # 2. Барқарор кардани вобастагиҳо
-          flutter pub get
-          
-          # 3. МАҶБУРӢ сохтани файлҳои Android (ин қадам муҳим аст)
-          # Мо аввал папкаи android-ро тоза мекунем, то Flutter онро аз нав дуруст созад
+          # 2. Нест кардани папкаи android агар хато бошад
           rm -rf android
+          
+          # 3. Аз нав сохтани лоиҳа (ин ноутбукро иваз мекунад)
           flutter create . --platforms android --package-name com.raonson.app
           
-          # 4. Сохтани файли local.properties
-          echo "sdk.dir=$ANDROID_SDK_ROOT" > android/local.properties
-          echo "flutter.sdk=$FLUTTER_ROOT" >> android/local.properties
+          # 4. Барқарор кардани вобастагиҳо
+          flutter pub get
           
-          # 5. Иҷрои Build
+          # 5. Сохтани APK
           flutter build apk --debug
