@@ -1,4 +1,4 @@
-name: Raonson Final Fix
+name: Raonson Final APK Build
 
 on:
   push:
@@ -25,16 +25,28 @@ jobs:
         with:
           channel: 'stable'
 
-      - name: Atomic Rebuild
+      - name: Ultimate Repair and Build
         run: |
-          # 1. Тозакунии куллӣ
-          find . -maxdepth 1 ! -name 'lib' ! -name '.github' ! -name '.' -exec rm -rf {} +
+          # 1. Ҷустуҷӯи файли main.dart дар тамоми папкаҳо
+          MAIN_DART_PATH=$(find . -name "main.dart" | head -n 1)
+          echo "Found main.dart at: $MAIN_DART_PATH"
           
-          # 2. Эҷоди файли pubspec.yaml-и стандартӣ
+          # 2. Тоза кардани ҳама чиз ба ғайр аз коди асосӣ
+          mkdir -p temp_lib
+          if [ ! -z "$MAIN_DART_PATH" ]; then
+            cp "$MAIN_DART_PATH" temp_lib/main.dart
+          else
+            echo "void main() => print('Hello');" > temp_lib/main.dart
+          fi
+          
+          rm -rf * .github/workflows/* # Тоза кардани ҳама чиз
+          mkdir -p lib
+          cp temp_lib/main.dart lib/main.dart
+          
+          # 3. Эҷоди файлҳои тозаи лоиҳа
           cat <<EOF > pubspec.yaml
           name: raonson
           description: "Raonson App"
-          publish_to: 'none'
           version: 1.0.0+1
           environment:
             sdk: '>=3.2.0 <4.0.0'
@@ -45,29 +57,19 @@ jobs:
           dev_dependencies:
             flutter_test:
               sdk: flutter
-            flutter_lints: ^3.0.0
           flutter:
             uses-material-design: true
           EOF
 
-          # 3. Агар папкаи lib набошад ё main.dart набошад, як файли тестӣ месозад
-          if [ ! -d "lib" ]; then mkdir lib; fi
-          if [ ! -f "lib/main.dart" ]; then
-            cat <<EOF > lib/main.dart
-            import 'package:flutter/material.dart';
-            void main() => runApp(MaterialApp(home: Scaffold(body: Center(child: Text('Raonson Ready')))));
-          EOF
-          fi
-
-          # 4. Сохтани лоиҳаи Android аз аввал
+          # 4. Аз нав сохтани сохтори Android (Ноутбуки виртуалӣ)
           flutter create . --platforms android --force
           
-          # 5. Насби пакетҳо ва сохтан
+          # 5. Сохтани APK
           flutter pub get
           flutter build apk --debug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: raonson-apk
+          name: Raonson-App-Debug
           path: build/app/outputs/flutter-apk/app-debug.apk
