@@ -1,42 +1,64 @@
 import 'package:flutter/material.dart';
+import 'package:raonson/screens/home_screen.dart';
+import 'package:raonson/screens/profile_screen.dart';
+import 'package:raonson/screens/chatgpt_screen.dart';
+import 'package:raonson/screens/reels_screen.dart';
+import 'package:raonson/screens/search_screen.dart';
+import 'package:raonson/screens/video_screen.dart';
+import 'package:raonson/widgets/bottom_nav_bar.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  runApp(const RaonsonApp());
+}
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-  // This widget is the root of your application.
+class RaonsonApp extends StatelessWidget {
+  const RaonsonApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      // Application name
-      title: 'Flutter Hello World',
-      // Application theme data, you can set the colors for the application as
-      // you want
+      title: 'Raonson',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        // useMaterial3: false,
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.green,
+        scaffoldBackgroundColor: Colors.white,
       ),
-      // A widget which will be started on application startup
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MainScreen(),
     );
   }
 }
 
-class MyHomePage extends StatelessWidget {
-  final String title;
-  const MyHomePage({super.key, required this.title});  
+class MainScreen extends StatefulWidget {
+  const MainScreen({super.key});
+
+  @override
+  State<MainScreen> createState() => _MainScreenState();
+}
+
+class _MainScreenState extends State<MainScreen> {
+  int _currentIndex = 0;
+
+  final List<Widget> _screens = [
+    const HomeScreen(),
+    const SearchScreen(),
+    const ReelsScreen(),
+    const ChatGPTScreen(),
+    const ProfileScreen(),
+  ];
+
+  void _onTabTapped(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        // The title text which will be shown on the action bar
-        title: Text(title),
-      ),
-      body: Center(
-        child: Text(
-          'Hello, World!',
-        ),
+      body: _screens[_currentIndex],
+      bottomNavigationBar: BottomNavBar(
+        currentIndex: _currentIndex,
+        onTap: _onTabTapped,
       ),
     );
   }
